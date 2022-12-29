@@ -2,6 +2,7 @@
 const { Client, GatewayIntentBits, Collection, REST, Routes, ActivityType } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
+const roleUpdate = require('./jobs/roleUpdater')
 
 require('dotenv').config()
 

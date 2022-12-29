@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const fetch = require('node-fetch');
 const utils = require('../utils')
 
@@ -25,31 +25,66 @@ module.exports = {
         // * Here we check if the correct discord account is linked, if so proceed, otherwise return an error.
         let playerLinks = await fetch(`https://api.slothpixel.me/api/players/${uuid}`)
             .then(response => response.json());
-        console.log(interaction.user)
+
         if (playerLinks.links.DISCORD !== `${interaction.user.username}#${interaction.user.discriminator}`) {
-            // ! Not done yet!
-            let notLinkedEmbed = new EmbedBuilder()
+            let noLinkEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
                 .setTitle('The player you want to link with doesn\'t have their Discord account linked on Hypixel!')
                 .setDescription('To link your account, follow the steps in the video below.')
-                .setFooter({ text: `${interaction.username}`, iconURL: `https://cdn.discordapp.com/avatars/${interaction.id}/${interaction.avatar}` })
+                .setImage('https://i.imgur.com/yyrDttU.gif')
+                .setFooter({ text: `${interaction.user.username}`, iconURL: `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}` })
                 .setTimestamp()
-            return interaction.reply({ embeds: [notLinkedEmbed] })
+            return interaction.reply({ embeds: [noLinkEmbed] })
         }
 
         // * Get the data of the guild being requested. Can be expanded to be used with multiple guilds, but seeing as this is for one, what's the point.
         // * After getting the data, we loop through and see if any member matches, if yes use the data, else return an error.
+        let playerData = null;
         let guildStats = await fetch(`https://api.slothpixel.me/api/guilds/name/Lobby%2055`)
             .then(response => response.json())
+
         let guildMembers = guildStats.members;
         guildMembers.filter(function(data){
             if (data.uuid == uuid) {
                 playerData = data;
-            } else { playerData = null; }
+            }
         })
-        console.log(playerData)
+
         if (playerData === null) {
-            return interaction.reply({ embeds: [utils.Error('You aren\'t in this guild!', interaction.user )] })
+            let linkFailure = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle(`Failed to link to ${uuidLookup.name}`)
+                .setDescription(`You are not in that guild, join it to be able to verify!`)
+                .setThumbnail(`https://mc-heads.net/head/${uuid}`)
+                .setFooter({ text: `${interaction.user.username}`, iconURL: `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}` })
+                .setTimestamp()
+            return interaction.reply({ embeds: [linkFailure] })
+        }
+
+        // * Then we try to store the data in MongoDB
+        try {
+            let result = await utils.insertData(interaction.user, playerData.uuid, playerData.rank)
+            if (result.acknowledged === true) {
+                let linkSuccess = new EmbedBuilder()
+                    .setColor(0x32CD32)
+                    .setTitle(`Successfully linked to ${uuidLookup.name}`)
+                    .setDescription('You are now linked, it will take some \ntime to get your guild roles.')
+                    .setThumbnail(`https://mc-heads.net/head/${uuid}`)
+                    .setFooter({ text: `${interaction.user.username}`, iconURL: `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}` })
+                    .setTimestamp()
+                interaction.reply({ embeds: [linkSuccess] });
+            }
+        } catch (error) {
+            if (error.message.includes('duplicate key error collection')) {
+                let linkFailure = new EmbedBuilder()
+                    .setColor(0xFF0000)
+                    .setTitle(`Failed to link to ${uuidLookup.name}`)
+                    .setDescription(`You are already linked to ${uuidLookup.name}. Run the command \`/unverify\` to unlink your account.`)
+                    .setThumbnail(`https://mc-heads.net/head/${uuid}`)
+                    .setFooter({ text: `${interaction.user.username}`, iconURL: `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}` })
+                    .setTimestamp()
+                return interaction.reply({ embeds: [linkFailure] });
+            }
         }
     }
 }
