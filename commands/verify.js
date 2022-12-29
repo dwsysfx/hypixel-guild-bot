@@ -11,6 +11,9 @@ module.exports = {
            .setDescription('The username of the player who you want to link your account with.')
         ),
     async execute(interaction) {
+        let rMember = interaction.guild.roles.cache.get('1043703755880800346')
+        let rChill = interaction.guild.roles.cache.get('1043703819172839484')
+
         // * Get the inputted IGN and check if it is valid.
         const player = interaction.options.getString('player');
         const uuidLookup = await fetch(`https://api.minetools.eu/uuid/${player}`)
@@ -48,16 +51,13 @@ module.exports = {
             if (data.uuid == uuid) {
                 playerData = data;
             }
-
             let savedRank = await utils.getData(data.uuid);
-            if (savedRank && data.rank !== savedRank.rank) {
-                console.log(savedRank.uuid)
-                console.log(savedRank._id)
+            if (data.rank !== savedRank) {
                 if (data.rank === 'Member') {
-                    interaction.member.roles.add('1043703755880800346');
-                } else if (data.rank === 'Chill') {
-                    interaction.member.roles.add('1043703819172839484');
-                }
+                     interaction.member.roles.add(rMember)
+                 } else if (data.rank === 'Chill') {
+                     interaction.member.roles.add(rChill)
+                 }
             }
         })
     
