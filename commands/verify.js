@@ -44,11 +44,23 @@ module.exports = {
             .then(response => response.json())
 
         let guildMembers = guildStats.members;
-        guildMembers.filter(function(data){
+        guildMembers.filter(async function(data){
             if (data.uuid == uuid) {
                 playerData = data;
             }
+
+            let savedRank = await utils.getData(data.uuid);
+            if (savedRank && data.rank !== savedRank.rank) {
+                console.log(savedRank.uuid)
+                console.log(savedRank._id)
+                if (data.rank === 'Member') {
+                    interaction.member.roles.add('1043703755880800346');
+                } else if (data.rank === 'Chill') {
+                    interaction.member.roles.add('1043703819172839484');
+                }
+            }
         })
+    
 
         if (playerData === null) {
             let linkFailure = new EmbedBuilder()

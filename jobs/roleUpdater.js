@@ -17,7 +17,6 @@ async function roleUpdate() {
             } else if (data.rank === 'Chill') {
                 guild.addMemberRole(savedRank._id, '1043703819172839484')
             }
-
         }
     })
 }
