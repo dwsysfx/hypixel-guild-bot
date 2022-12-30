@@ -11,9 +11,6 @@ module.exports = {
            .setDescription('The username of the player who you want to link your account with.')
         ),
     async execute(interaction) {
-        let rMember = interaction.guild.roles.cache.get('1043703755880800346')
-        let rChill = interaction.guild.roles.cache.get('1043703819172839484')
-
         // * Get the inputted IGN and check if it is valid.
         const player = interaction.options.getString('player');
         const uuidLookup = await fetch(`https://api.minetools.eu/uuid/${player}`)
@@ -41,27 +38,19 @@ module.exports = {
         }
 
         // * Get the data of the guild being requested. Can be expanded to be used with multiple guilds, but seeing as this is for one, what's the point.
-        // * After getting the data, we loop through and see if any member matches, if yes use the data, else return an error.
         let playerData = null;
         let guildStats = await fetch(`https://api.slothpixel.me/api/guilds/name/Lobby%2055`)
             .then(response => response.json())
 
+        // * After getting the data, we loop through and see if any member matches.
         let guildMembers = guildStats.members;
         guildMembers.filter(async function(data){
             if (data.uuid == uuid) {
                 playerData = data;
             }
-            let savedRank = await utils.getData(data.uuid);
-            if (data.rank !== savedRank) {
-                if (data.rank === 'Member') {
-                     interaction.member.roles.add(rMember)
-                 } else if (data.rank === 'Chill') {
-                     interaction.member.roles.add(rChill)
-                 }
-            }
         })
     
-
+        // * If no member matches, return an error, otherwise give the specified role.
         if (playerData === null) {
             let linkFailure = new EmbedBuilder()
                 .setColor(0xFF0000)
@@ -71,9 +60,15 @@ module.exports = {
                 .setFooter({ text: `${interaction.user.username}`, iconURL: `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}` })
                 .setTimestamp()
             return interaction.reply({ embeds: [linkFailure] })
+        } else {
+            if (playerData.rank === 'Member') {
+                interaction.member.roles.add('1043703755880800346')
+            } else if (playerData.rank === 'Chill') {
+                interaction.member.roles.add('1043703819172839484')
+            }
         }
 
-        // * Then we try to store the data in MongoDB
+        // * Insert the data into MongoDB, then return an embed to say what happened.
         try {
             let result = await utils.insertData(interaction.user, playerData.uuid, playerData.rank)
             if (result.acknowledged === true) {
