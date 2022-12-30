@@ -23,4 +23,4 @@ async function roleUpdate() {
     })
 }
 
-setInterval(roleUpdate, 10000)
+setInterval(roleUpdate, process.env.UPDATE_TIME)
