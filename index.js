@@ -2,16 +2,16 @@
 const { Client, GatewayIntentBits, Collection, REST, Routes, ActivityType } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
-const roleUpdate = require('./jobs/roleUpdater')
 
 require('dotenv').config()
 
-// * Set up permission and partials.
+// * Set up permission.
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.GuildMessageReactions,
+		GatewayIntentBits.GuildMembers,
     ],
 });
 
