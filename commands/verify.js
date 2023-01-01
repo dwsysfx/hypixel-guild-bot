@@ -9,7 +9,7 @@ module.exports = {
         .addStringOption(option =>
            option.setName('player')
            .setDescription('The username of the player who you want to link your account with.')
-        ),
+           .setRequired(true)),
     async execute(interaction) {
         // * Get the inputted IGN and check if it is valid.
         const player = interaction.options.getString('player');
@@ -75,11 +75,11 @@ module.exports = {
                 let linkSuccess = new EmbedBuilder()
                     .setColor(0x32CD32)
                     .setTitle(`Successfully linked to ${uuidLookup.name}`)
-                    .setDescription('You are now linked, it will take some \ntime to get your guild roles.')
+                    .setDescription(`You are now linked, it will take some \ntime to get your guild roles.`)
                     .setThumbnail(`https://mc-heads.net/head/${uuid}`)
                     .setFooter({ text: `${interaction.user.username}`, iconURL: `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}` })
                     .setTimestamp()
-                interaction.reply({ embeds: [linkSuccess] });
+                return interaction.reply({ embeds: [linkSuccess] });
             }
         } catch (error) {
             if (error.message.includes('duplicate key error collection')) {

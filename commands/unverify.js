@@ -9,8 +9,8 @@ module.exports = {
         try {
             let result = await utils.removeData(interaction.user)
             if (result.acknowledged === true) {
-                interaction.member.roles.remove('1058152607203467395');
-                // interaction.member.roles.remove(rChill);
+                interaction.member.roles.remove('1043703755880800346');
+                interaction.member.roles.remove('1043703819172839484');
                 return interaction.reply({ embeds: [utils.Success(`You are now unlinked, run \`/link\` to relink!`, interaction.user )] });
             }
         } catch (error) {

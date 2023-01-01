@@ -5,10 +5,10 @@ const client = new MongoClient(process.env.MONGO_URI);
 client.connect().then(console.log('Connected to MongoDB in utils!'));
 
 module.exports = {
-    getData: (uuid) => {
+    getData: () => {
         return client.db('hypixel-guild-bot')
             .collection('lobby-55')
-            .findOne({ uuid: uuid });
+            .find();
     },
 
     insertData: (user, uuid, rank) => {
