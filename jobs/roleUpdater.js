@@ -1,5 +1,4 @@
 const fetch = require('node-fetch')
-const utils = require('../utils')
 require('dotenv/config');
  
 const { MongoClient } = require('mongodb');
@@ -34,12 +33,12 @@ setInterval(async () => {
 				}
 			})
 			if (guildMatch !== null) {
-			    user.roles.add('1043703755880800346');
-                user.roles.add('1043703819172839484');
+			    user.roles.add(process.env.ROLE1);
+                user.roles.add(process.env.ROLE2);
 				guildMatch = null;
 			} else {
-				user.roles.remove('1043703755880800346');
-                user.roles.remove('1043703819172839484');
+				user.roles.remove(process.env.ROLE1);
+                user.roles.remove(process.env.ROLE2);
 			}
         })
     console.log(linkData);
