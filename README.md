@@ -2,7 +2,7 @@
 
 [Setup](#setup) | [Commands](#commands)
 
-An open-source discord bot that interacts with the Hypixel API. Made for [Lobby 55](https://plancke.io/hypixel/guild/name/Lobby%2055) by dwsysfx#9543!
+An open-source discord bot that interacts with the Hypixel API. Made for [Lobby 55](https://plancke.io/hypixel/guild/name/Lobby%2055) by dwsysfx#9543! Not finished, probably will not be.
 
 ## Setup
 1. Clone repo
